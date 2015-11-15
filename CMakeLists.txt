@@ -4,10 +4,10 @@ find_package(Qt4 REQUIRED)
 
 include_directories(${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
 
-set(lennardNet_SRCS lennardNet.cpp main.cpp)
+set(LennardNet_SRCS LennardNet.cpp main.cpp)
 
-qt4_automoc(${lennardNet_SRCS})
-add_executable(lennardnet ${lennardNet_SRCS})
+qt4_automoc(${LennardNet_SRCS})
+add_executable(lennardnet ${LennardNet_SRCS})
 target_link_libraries(lennardnet ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 install(TARGETS lennardnet RUNTIME DESTINATION bin)

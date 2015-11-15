@@ -1,11 +1,11 @@
 #include <QtGui/QApplication>
-#include "lennardNet.h"
+#include "LennardNet.h"
 
 
 int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
-    lennardNet lennardnet;
+    LennardNet lennardnet;
     lennardnet.show();
     return app.exec();
 }

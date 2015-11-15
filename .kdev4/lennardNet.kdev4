@@ -1,0 +1,44 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x14\x00l\x00e\x00n\x00n\x00a\x00r\x00d\x00N\x00e\x00t)
+
+[CMake]
+Build Directory Count=1
+Current Build Directory Index=0
+ProjectRootRelative=./
+
+[CMake][CMake Build Directory 0]
+Build Directory Path=file:///home/space/Projects/lennardNet/build
+Build Type=Debug
+CMake Binary=file:///bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=
+
+[Defines And Includes][Compiler]
+Name=GCC
+Path=gcc
+Type=GCC
+
+[Launch]
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=lennardnet
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\x14\x00l\x00e\x00n\x00n\x00a\x00r\x00d\x00N\x00e\x00t\x00\x00\x00\x14\x00l\x00e\x00n\x00n\x00a\x00r\x00d\x00n\x00e\x00t)
+Dependency Action=Build
+EnvironmentGroup=
+Executable=file:///home/space/Projects/lennardNet/
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Project Target=lennardNet,lennardnet
+Use External Terminal=false
+Working Directory=
+isExecutable=false
+
+[Project]
+VersionControlSupport=kdevgit
