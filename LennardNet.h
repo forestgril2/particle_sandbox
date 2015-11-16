@@ -3,6 +3,15 @@
 
 #include <QtGui/QMainWindow>
 
+class Vector
+{
+  Vector(QPointF p) : p_(p) {};
+  QPointF p_;
+  
+public:
+  void paint(QPainter* painter);
+};
+
 class LennardNet : public QMainWindow
 {
   Q_OBJECT
@@ -12,8 +21,8 @@ class LennardNet : public QMainWindow
     void initAction();
     void paintPoints(QPainter* painter);
 
-  QPoint pointA;
-  QPoint pointB;
+  Vector pointA;
+  Vector pointB;
 
 public:
   LennardNet();

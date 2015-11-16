@@ -26,6 +26,10 @@ void LennardNet::initAction()
 LennardNet::~LennardNet()
 {}
 
+void Vector::paint(QPainter* painter)
+{
+}
+
 void LennardNet::paintEvent(QPaintEvent* pE)
 {
   QPainter painter(this);
@@ -39,10 +43,10 @@ void LennardNet::paintPoints(QPainter* painter)
   painter->setPen(QPen(Qt::red, 3, Qt::SolidLine, Qt::RoundCap));
   painter->drawPoint(pointA);
   
+  //pointA.paint(Qt::red, 5);
+  
   painter->setPen(QPen(Qt::green, 3, Qt::SolidLine, Qt::RoundCap));
   painter->drawPoint(pointB);
 }
-
-
 
 #include "LennardNet.moc"

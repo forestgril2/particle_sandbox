@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../LennardNet.h
+QtGui/QMainWindow
+-
+
+/home/space/Projects/lennardNet/LennardNet.cpp
+LennardNet.h
+/home/space/Projects/lennardNet/LennardNet.h
+QtGui/QLabel
+-
+QtGui/QMenu
+-
+QtGui/QMenuBar
+-
+QtGui/QAction
+-
+QtGui/QPainter
+-
+LennardNet.moc
+/home/space/Projects/lennardNet/LennardNet.moc
+
+/home/space/Projects/lennardNet/LennardNet.h
+QtGui/QMainWindow
+-
+
+/home/space/Projects/lennardNet/main.cpp
+QtGui/QApplication
+-
+LennardNet.h
+/home/space/Projects/lennardNet/LennardNet.h
+
+LennardNet.moc
+../LennardNet.h
+../LennardNet.h
+
