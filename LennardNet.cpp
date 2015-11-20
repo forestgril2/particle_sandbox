@@ -9,7 +9,12 @@
 #include <iostream>
 
 const unsigned int MSEC_PER_SEC = 1000;
-const double TIME_INTERVAL = 0.5;
+const double TIME_INTERVAL = 0.02;
+
+double randd(double max)
+{
+  return ((double)rand()/(double)RAND_MAX)*max;
+};
 
 LennardNet::LennardNet()
 {
@@ -40,15 +45,19 @@ void LennardNet::initUpdateInterval()
 
 void LennardNet::initPixels()
 {
-  pixels.resize(2);
+  pixels.resize(100);
+	
+	for (auto &p : pixels)
+  {
+    p = Point2D(randd(width()), randd(height()));
+    p.setSpeed(randd(width()/10) - width()/20, randd(height()/10) - height()/20);
+		p.setColor(Color(Qt::red));
+  }
+  
   pixels[0] = Point2D(width()/2, height()/2);
-  pixels[0].setSpeed(50,50);
-  pixels[0].setColor(Color(Qt::red));
-  pixels[1] = Point2D(width()/2, height()/2);
-  pixels[1].setSpeed(-50,-50);
-  pixels[1].setColor(Color(Qt::green));
+	pixels[0].setSpeed(-50,50);
+	pixels[0].setColor(Qt::green);
 }
-
 
 void LennardNet::initAction()
 {
@@ -93,9 +102,9 @@ void LennardNet::proceedInTime(double timeDiff)
   for (auto &p : pixels)
   {
     p.proceedInTime(timeDiff);
-    if (pixels[1].pos().x() < 50 && false == elapsed)
+    if (pixels[0].pos().x() < 50 && false == elapsed)
     {
-			elapsed = true;
+      elapsed = true;
       label->setText("Time: " + QString::number(nanoTimerTotal.nsecsElapsed()/1000000));
     }
   }
