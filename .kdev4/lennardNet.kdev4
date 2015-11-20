@@ -9,10 +9,10 @@ ProjectRootRelative=./
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/space/Projects/lennardNet/build
 Build Type=Debug
-CMake Binary=file:///bin/cmake
-Environment Profile=
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=default
 Extra Arguments=
-Install Directory=
+Install Directory=file:///usr/local
 
 [Defines And Includes][Compiler]
 Name=GCC
