@@ -3,27 +3,35 @@
 
 #include <QtGui/QMainWindow>
 
+using namespace std;
+
+typedef QPointF Point2D;
+typedef QPainter Painter;
+typedef QColor Color;
+
 class Pixel
 {
-  QPointF p_;
+  Point2D p_;
+  Color c_;
   
 public:
-  void operator=(QPoint p) {p_ = p;};
-  Pixel() : p_(QPointF(0,0)) {};
-  Pixel(QPointF p) : p_(p) {};
-  void paint(QPainter* painter);
+  void operator=(Point2D p) {p_ = p;};
+  Pixel() : p_(Point2D(0,0)) {};
+  Pixel(Point2D p) : p_(p) {};
+  void paint(Painter* painter);
+  void setColor(Color c) {c_ = c;};
+  Color color() {return c_;};
 };
 
 class LennardNet : public QMainWindow
 {
   Q_OBJECT
 
-  void paintPointA(QPainter* painter);
   virtual void paintEvent(QPaintEvent* pE);
   void initAction();
-  void paintPoints(QPainter* painter);
+  void paintPoints(Painter* painter);
 
-  Pixel *pixels;
+  vector<Pixel> pixels;
 
 public:
   LennardNet();

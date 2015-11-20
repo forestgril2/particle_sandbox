@@ -30,12 +30,6 @@ LennardNet.moc
 QtGui/QMainWindow
 -
 
-/home/space/Projects/lennardNet/main.cpp
-QtGui/QApplication
--
-LennardNet.h
-/home/space/Projects/lennardNet/LennardNet.h
-
 LennardNet.moc
 ../LennardNet.h
 ../LennardNet.h
