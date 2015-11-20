@@ -5,32 +5,47 @@
 #include <QtGui/QMenuBar>
 #include <QtGui/QAction>
 #include <QtGui/QPainter>
-#include <QTimer>
 
 #include <iostream>
 
 const unsigned int MSEC_PER_SEC = 1000;
-const double TIME_INTERVAL = 0.1;
+const double TIME_INTERVAL = 0.5;
 
 LennardNet::LennardNet()
 {
   setGeometry(200, 200, 500, 500);
   initPixels();
   initAction();
-  
+  initLabel();
+  initUpdateInterval();
+}
+
+void LennardNet::initLabel()
+{
+  label = new QLabel( this );
+  label->setStyleSheet("QLabel { background-color : red; color : blue; }");
+  label->setText( "Time: " );
+  label->move(250, 20);
+}
+
+void LennardNet::initUpdateInterval()
+{
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
   timer->start(TIME_INTERVAL * MSEC_PER_SEC);
+  nanoTimer.start();
+  nanoTimerTotal.start();
 }
+
 
 void LennardNet::initPixels()
 {
   pixels.resize(2);
   pixels[0] = Point2D(width()/2, height()/2);
-  pixels[0].setSpeed(1,1);
+  pixels[0].setSpeed(50,50);
   pixels[0].setColor(Color(Qt::red));
-  pixels[1] = Point2D(width()/2 + 5, height()/2 + 5);
-  pixels[1].setSpeed(-1,-1);
+  pixels[1] = Point2D(width()/2, height()/2);
+  pixels[1].setSpeed(-50,-50);
   pixels[1].setColor(Color(Qt::green));
 }
 
@@ -57,7 +72,10 @@ void LennardNet::paintEvent(QPaintEvent* pE)
   
   painter.fillRect(0, 0, width(), height(), Qt::black);
   paintPoints(&painter);
-  proceedInTime(TIME_INTERVAL);
+  
+  qint64 nanoSec = nanoTimer.nsecsElapsed();
+  nanoTimer.restart();
+  proceedInTime(static_cast<double>(nanoSec)/1000000000.);
 }
 
 void LennardNet::paintPoints(Painter* painter)
@@ -71,9 +89,15 @@ void LennardNet::paintPoints(Painter* painter)
 
 void LennardNet::proceedInTime(double timeDiff)
 {
+	static bool elapsed = false;
   for (auto &p : pixels)
   {
     p.proceedInTime(timeDiff);
+    if (pixels[1].pos().x() < 50 && false == elapsed)
+    {
+			elapsed = true;
+      label->setText("Time: " + QString::number(nanoTimerTotal.nsecsElapsed()/1000000));
+    }
   }
 }
 

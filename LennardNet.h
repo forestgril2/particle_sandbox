@@ -2,6 +2,9 @@
 #define LennardNet_H
 
 #include <QtGui/QMainWindow>
+#include <QTimer>
+#include <QElapsedTimer>
+#include <QLabel>
 
 using namespace std;
 
@@ -36,15 +39,19 @@ public:
 class LennardNet : public QMainWindow
 {
   Q_OBJECT
-    double MSEC_PER_SEC;
 
   virtual void paintEvent(QPaintEvent* pE);
   void initAction();
   void paintPoints(Painter* painter);
-    void initPixels();
-    void proceedInTime(double arg1);
+  void initPixels();
+  void proceedInTime(double arg1);
+  void initUpdateInterval();
+  void initLabel();
 
   vector<Pixel> pixels;
+  QElapsedTimer nanoTimerTotal;
+  QElapsedTimer nanoTimer;
+  QLabel* label;
 
 public:
   LennardNet();
