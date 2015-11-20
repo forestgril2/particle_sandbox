@@ -9,9 +9,11 @@
 LennardNet::LennardNet()
 {
   setGeometry(200, 200, 500, 500);
-  pointA = QPoint(width()/2, height()/2);
-  pointB = QPoint(width()/2 + 5, height()/2 + 5);
-
+  
+  pixels = new Pixel[2]; 
+  pixels[0] = QPoint(width()/2, height()/2);
+  pixels[1] = QPoint(width()/2 + 5, height()/2 + 5);
+  
   initAction();
 }
 
@@ -26,8 +28,9 @@ void LennardNet::initAction()
 LennardNet::~LennardNet()
 {}
 
-void Vector::paint(QPainter* painter)
+void Pixel::paint(QPainter* painter)
 {
+  painter->drawPoint(p_);
 }
 
 void LennardNet::paintEvent(QPaintEvent* pE)
@@ -41,12 +44,9 @@ void LennardNet::paintEvent(QPaintEvent* pE)
 void LennardNet::paintPoints(QPainter* painter)
 {
   painter->setPen(QPen(Qt::red, 3, Qt::SolidLine, Qt::RoundCap));
-  painter->drawPoint(pointA);
-  
-  //pointA.paint(Qt::red, 5);
-  
+  pixels[0].paint(painter);
   painter->setPen(QPen(Qt::green, 3, Qt::SolidLine, Qt::RoundCap));
-  painter->drawPoint(pointB);
+  pixels[1].paint(painter);
 }
 
 #include "LennardNet.moc"

@@ -3,12 +3,14 @@
 
 #include <QtGui/QMainWindow>
 
-class Vector
+class Pixel
 {
-  Vector(QPointF p) : p_(p) {};
   QPointF p_;
   
 public:
+  void operator=(QPoint p) {p_ = p;};
+  Pixel() : p_(QPointF(0,0)) {};
+  Pixel(QPointF p) : p_(p) {};
   void paint(QPainter* painter);
 };
 
@@ -18,11 +20,10 @@ class LennardNet : public QMainWindow
 
   void paintPointA(QPainter* painter);
   virtual void paintEvent(QPaintEvent* pE);
-    void initAction();
-    void paintPoints(QPainter* painter);
+  void initAction();
+  void paintPoints(QPainter* painter);
 
-  Vector pointA;
-  Vector pointB;
+  Pixel *pixels;
 
 public:
   LennardNet();
