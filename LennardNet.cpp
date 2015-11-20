@@ -13,9 +13,10 @@ const unsigned int MSEC_PER_SEC = 1000;
 const double TIME_INTERVAL = 0.02;
 const double gravityConstant = 1;
 const unsigned numberOfMassPoints = 200;
-const double LJConstant = 0.00000001;
+const double LJConstant = 0.0001;
 const double LJDistance = 500/sqrt(numberOfMassPoints);
 const double squareLJDist = LJDistance*LJDistance;
+const double maxSpeed = 1;
 
 double randd(double max)
 {
@@ -56,7 +57,7 @@ void LennardNet::initPixels()
   for (auto &p : pixels)
   {
     p = Point2D(randd(width()), randd(height()));
-    //p.setSpeed(randd(width()/10) - width()/20, randd(height()/10) - height()/20);
+    p.setSpeed(randd(maxSpeed) - maxSpeed/2, randd(maxSpeed) - maxSpeed/2);
     p.setColor(Color(Qt::red));
   }
   
@@ -146,7 +147,7 @@ Point2D LennardNet::calculateForceForPoint(Point2D pos)
 Point2D LennardNet::LJForce(Point2D vector)
 {
   double sqrDist = vector.rx()*vector.rx() + vector.ry()*vector.ry();
-  if (sqrDist == 0) return Point2D(0, 0);
+  if (sqrDist < 100) return Point2D(0, 0);
   
   double r = sqrt(sqrDist);
   
