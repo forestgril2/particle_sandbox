@@ -8,8 +8,10 @@
 
 #include <iostream>
 
+const unsigned pixelMass = 1;
 const unsigned int MSEC_PER_SEC = 1000;
 const double TIME_INTERVAL = 0.02;
+const double forceFactor = 100;
 
 double randd(double max)
 {
@@ -45,7 +47,7 @@ void LennardNet::initUpdateInterval()
 
 void LennardNet::initPixels()
 {
-  pixels.resize(100);
+  pixels.resize(300);
 	
 	for (auto &p : pixels)
   {
@@ -54,9 +56,9 @@ void LennardNet::initPixels()
 		p.setColor(Color(Qt::red));
   }
   
-  pixels[0] = Point2D(width()/2, height()/2);
-	pixels[0].setSpeed(-50,50);
-	pixels[0].setColor(Qt::green);
+  markerPixel = Point2D(width()/2, height()/2);
+	markerPixel.setSpeed(-50,50);
+	markerPixel.setColor(Qt::green);
 }
 
 void LennardNet::initAction()
@@ -94,25 +96,53 @@ void LennardNet::paintPoints(Painter* painter)
     painter->setPen(QPen(p.color(), 3, Qt::SolidLine, Qt::RoundCap));
     p.paint(painter);
   }
+  painter->setPen(QPen(markerPixel.color(), 6, Qt::SolidLine, Qt::RoundCap));
+  markerPixel.paint(painter);
 }
 
 void LennardNet::proceedInTime(double timeDiff)
 {
-	static bool elapsed = false;
+  static bool elapsed = false;
+  Point2D acceleration;
+  
   for (auto &p : pixels)
   {
-    p.proceedInTime(timeDiff);
-    if (pixels[0].pos().x() < 50 && false == elapsed)
-    {
-      elapsed = true;
-      label->setText("Time: " + QString::number(nanoTimerTotal.nsecsElapsed()/1000000));
-    }
+    acceleration = calculateForceForPoint(p.pos())/pixelMass;
+    p.proceedInTime(timeDiff, acceleration);
+  }
+  
+  markerPixel.proceedInTime(timeDiff, Point2D(0,0));
+  if (markerPixel.pos().x() < 50 && false == elapsed)
+  {
+    elapsed = true;
+    label->setText("Time: " + QString::number(nanoTimerTotal.nsecsElapsed()/1000000));
   }
 }
 
-void Pixel::proceedInTime(double timeDiff)
+Point2D LennardNet::calculateForceForPoint(Point2D pos)
 {
-  pos_ += timeDiff*speed_;
+	Point2D force(0,0);
+	Point2D vector;
+	double dist;
+	double invSquareDist;
+	
+	for (auto &p : pixels)
+	{
+		vector = p.pos() - pos;
+    invSquareDist = (vector.rx()*vector.rx()) + (vector.ry()*vector.ry());
+		if (invSquareDist == 0) continue;
+		dist = sqrt(invSquareDist);
+		force += forceFactor*vector/invSquareDist;
+	}
+	
+	return force;
+}
+
+
+void Pixel::proceedInTime(double timeDiff, Point2D acceleration)
+{
+  pos_ += timeDiff*speed_ + acceleration*timeDiff*timeDiff/2;
+	speed_ += acceleration*timeDiff;
 }
 
 

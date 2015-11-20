@@ -33,7 +33,7 @@ public:
   Color color() {return color_;};
   
   void paint(Painter* painter);
-  void proceedInTime(double timeDiff);
+  void proceedInTime(double timeDiff, Point2D acceleration);
 };
 
 class LennardNet : public QMainWindow
@@ -47,7 +47,9 @@ class LennardNet : public QMainWindow
   void proceedInTime(double arg1);
   void initUpdateInterval();
   void initLabel();
+  Point2D calculateForceForPoint(Point2D pos);
 
+	Pixel markerPixel;
   vector<Pixel> pixels;
   QElapsedTimer nanoTimerTotal;
   QElapsedTimer nanoTimer;
