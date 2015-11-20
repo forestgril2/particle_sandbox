@@ -48,8 +48,11 @@ class LennardNet : public QMainWindow
   void initUpdateInterval();
   void initLabel();
   Point2D calculateForceForPoint(Point2D pos);
+  void checkInformMarkerPixelTime();
+  Point2D gravityForce(Point2D vector);
+  Point2D LJForce(Point2D vector);
 
-	Pixel markerPixel;
+  Pixel markerPixel;
   vector<Pixel> pixels;
   QElapsedTimer nanoTimerTotal;
   QElapsedTimer nanoTimer;

@@ -11,7 +11,12 @@
 const unsigned pixelMass = 1;
 const unsigned int MSEC_PER_SEC = 1000;
 const double TIME_INTERVAL = 0.02;
-const double forceFactor = 100;
+const double gravityConstant = 1;
+const unsigned numberOfMassPoints = 200;
+const double LJConstant = 0.000000000001;
+const double LJDistance = 500/sqrt(numberOfMassPoints);
+const double LJ6 = LJDistance*LJDistance*LJDistance*LJDistance*LJDistance*LJDistance;
+const double LJ12 = LJ6*LJ6;
 
 double randd(double max)
 {
@@ -47,18 +52,18 @@ void LennardNet::initUpdateInterval()
 
 void LennardNet::initPixels()
 {
-  pixels.resize(300);
-	
-	for (auto &p : pixels)
+  pixels.resize(numberOfMassPoints);
+  
+  for (auto &p : pixels)
   {
     p = Point2D(randd(width()), randd(height()));
     p.setSpeed(randd(width()/10) - width()/20, randd(height()/10) - height()/20);
-		p.setColor(Color(Qt::red));
+    p.setColor(Color(Qt::red));
   }
   
   markerPixel = Point2D(width()/2, height()/2);
-	markerPixel.setSpeed(-50,50);
-	markerPixel.setColor(Qt::green);
+  markerPixel.setSpeed(-50,50);
+  markerPixel.setColor(Qt::green);
 }
 
 void LennardNet::initAction()
@@ -102,7 +107,6 @@ void LennardNet::paintPoints(Painter* painter)
 
 void LennardNet::proceedInTime(double timeDiff)
 {
-  static bool elapsed = false;
   Point2D acceleration;
   
   for (auto &p : pixels)
@@ -112,6 +116,12 @@ void LennardNet::proceedInTime(double timeDiff)
   }
   
   markerPixel.proceedInTime(timeDiff, Point2D(0,0));
+  checkInformMarkerPixelTime();
+}
+
+void LennardNet::checkInformMarkerPixelTime()
+{
+  static bool elapsed = false;
   if (markerPixel.pos().x() < 50 && false == elapsed)
   {
     elapsed = true;
@@ -119,30 +129,42 @@ void LennardNet::proceedInTime(double timeDiff)
   }
 }
 
+
 Point2D LennardNet::calculateForceForPoint(Point2D pos)
 {
-	Point2D force(0,0);
-	Point2D vector;
-	double dist;
-	double invSquareDist;
-	
-	for (auto &p : pixels)
-	{
-		vector = p.pos() - pos;
-    invSquareDist = (vector.rx()*vector.rx()) + (vector.ry()*vector.ry());
-		if (invSquareDist == 0) continue;
-		dist = sqrt(invSquareDist);
-		force += forceFactor*vector/invSquareDist;
-	}
-	
-	return force;
+  Point2D force(0,0);
+  Point2D vector;
+
+  for (auto &p : pixels)
+  {
+    vector = p.pos() - pos;
+    //force += gravityForce(vector);
+    force += LJForce(vector);
+  }
+  return force;
+}
+
+Point2D LennardNet::LJForce(Point2D vector)
+{
+  double sqrDist = sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
+  if (sqrDist == 0) return Point2D(0, 0);
+  double power6 = sqrDist*sqrDist*sqrDist;
+  
+  return LJConstant * (LJ12/(power6*power6) - 2*LJ6/( power6) ) * vector/(sqrt(sqrDist));
+}
+
+Point2D LennardNet::gravityForce(Point2D vector)
+{
+  double sqrDist = sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
+  if (sqrDist == 0) return Point2D(0, 0);
+  return gravityConstant * vector / sqrDist;
 }
 
 
 void Pixel::proceedInTime(double timeDiff, Point2D acceleration)
 {
   pos_ += timeDiff*speed_ + acceleration*timeDiff*timeDiff/2;
-	speed_ += acceleration*timeDiff;
+  speed_ += acceleration*timeDiff;
 }
 
 
