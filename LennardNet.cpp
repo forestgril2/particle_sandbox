@@ -13,10 +13,9 @@ const unsigned int MSEC_PER_SEC = 1000;
 const double TIME_INTERVAL = 0.02;
 const double gravityConstant = 1;
 const unsigned numberOfMassPoints = 200;
-const double LJConstant = 0.000000000001;
+const double LJConstant = 0.00000001;
 const double LJDistance = 500/sqrt(numberOfMassPoints);
-const double LJ6 = LJDistance*LJDistance*LJDistance*LJDistance*LJDistance*LJDistance;
-const double LJ12 = LJ6*LJ6;
+const double squareLJDist = LJDistance*LJDistance;
 
 double randd(double max)
 {
@@ -57,7 +56,7 @@ void LennardNet::initPixels()
   for (auto &p : pixels)
   {
     p = Point2D(randd(width()), randd(height()));
-    p.setSpeed(randd(width()/10) - width()/20, randd(height()/10) - height()/20);
+    //p.setSpeed(randd(width()/10) - width()/20, randd(height()/10) - height()/20);
     p.setColor(Color(Qt::red));
   }
   
@@ -146,11 +145,17 @@ Point2D LennardNet::calculateForceForPoint(Point2D pos)
 
 Point2D LennardNet::LJForce(Point2D vector)
 {
-  double sqrDist = sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
+  double sqrDist = vector.rx()*vector.rx() + vector.ry()*vector.ry();
   if (sqrDist == 0) return Point2D(0, 0);
-  double power6 = sqrDist*sqrDist*sqrDist;
   
-  return LJConstant * (LJ12/(power6*power6) - 2*LJ6/( power6) ) * vector/(sqrt(sqrDist));
+  double r = sqrt(sqrDist);
+  
+  double Y = squareLJDist / sqrDist;
+  double X = Y*Y*Y;
+  
+  //(12 LJsigma^6)/r^7-(12 LJsigma^12)/r^13
+
+  return LJConstant * ((12/r) * X * (1 - X) ) * vector/(r);
 }
 
 Point2D LennardNet::gravityForce(Point2D vector)
