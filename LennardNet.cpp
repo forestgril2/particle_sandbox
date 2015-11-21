@@ -8,12 +8,21 @@
 
 #include <iostream>
 
+// Constants
+const unsigned canvasWidth = 1000; 
+const unsigned canvasHeight = 1000;
+
 const unsigned pixelMass = 1;
 const unsigned int MSEC_PER_SEC = 1000;
-const double TIME_INTERVAL = 0.02;
-const unsigned numberOfMassPoints = 1600;
+const double TIME_INTERVAL = 0.05;
+const unsigned numPointsMax = 1000;
 const double maxSpeed = 0;
 
+double netWidth = 410; 
+double netHeight = 300;
+Rectangle netShape((canvasWidth - netWidth)/2, (canvasHeight - netHeight)/2, netWidth, netHeight);
+
+// Maths and physics
 double randd(double max)
 {
   return ((double)rand()/(double)RAND_MAX)*max;
@@ -21,8 +30,8 @@ double randd(double max)
 
 Point2D LJForce(Point2D vector)
 {
-  static const double LJConstant =1;
-  static const double LJDistance = 10.3;
+  static const double LJConstant = 10;
+  static const double LJDistance = 10;
   static const double squareLJDist = LJDistance*LJDistance;
   static const double lowerLJCutoff = 0.75*LJDistance;
   static const double upperLJCutoff = 2.5*LJDistance;
@@ -42,7 +51,7 @@ Point2D LJForce(Point2D vector)
 
 Point2D gravityForce(Point2D vector)
 {
-  static const double gravityConstant = 1;
+  static const double gravityConstant = 0.1;
   static const double lowerGravityCutoff = 2;
   static const double upperGravityCutoff = 5000;
   
@@ -54,8 +63,13 @@ Point2D gravityForce(Point2D vector)
 
 LennardNet::LennardNet()
 {
-  setGeometry(200, 200, 1000, 1000);
-  initPixels();
+  setGeometry(200, 200, canvasWidth, canvasHeight);
+  
+  addPixelsSquareNet(10, Rectangle(200, 200, 150, 150), Qt::red);
+  addPixelsSquareNet(15, Rectangle(400, 300, 150, 150), Qt::green);
+  addPixelsSquareNet(20, Rectangle(300, 400, 150, 150), Qt::blue);
+  
+  initMarkerPixel();
   initAction();
   initLabel();
   initUpdateInterval();
@@ -64,9 +78,9 @@ LennardNet::LennardNet()
 void LennardNet::initLabel()
 {
   label = new QLabel( this );
-  label->setStyleSheet("QLabel { background-color : red; color : blue; }");
+  label->setStyleSheet("QLabel { background-color : black; color : white; }");
   label->setText( "Time: " );
-  label->move(250, 20);
+  label->move(20, 20);
 }
 
 void LennardNet::initUpdateInterval()
@@ -79,25 +93,29 @@ void LennardNet::initUpdateInterval()
 }
 
 
-void LennardNet::initPixels()
+void LennardNet::addPixelsSquareNet(double squareSide, Rectangle R, Color color)
 {
-  pixels.resize(numberOfMassPoints);
+  auto numPoints = pixels.size();
   
-  for (auto i = 0; i < numberOfMassPoints; i++)
+  for (auto x = R.left(); x <= R.left() + R.width(); x += squareSide)
   {
-    pixels[i] = Point2D(width()/3 +(i%(int)sqrt(numberOfMassPoints))*10, height()/3 + 10*(i/(int)sqrt(numberOfMassPoints)));
-    pixels[i].setSpeed(randd(maxSpeed) - maxSpeed/2, randd(maxSpeed) - maxSpeed/2);
-    pixels[i].setColor(Color(Qt::red));
-  }
-  
-//  for (auto i = numberOfMassPoints/2; i < numberOfMassPoints; i++)
-//     {
-//       pixels[i] = Point2D(2*width()/3 +randd(width()/3), height()/3 + randd(height()/3));
-//       pixels[i].setSpeed(randd(maxSpeed) - maxSpeed/2, randd(maxSpeed) - maxSpeed/2);
-//       pixels[i].setColor(Color(Qt::green));
-//     }
+    for (auto y = R.top(); y <= R.top() + R.height(); y += squareSide)
+    {
+      pixels.resize(++numPoints);
     
+      pixels[numPoints -1] = Point2D(x, y);
 
+      pixels[numPoints -1].setSpeed(randd(maxSpeed) - maxSpeed/2, randd(maxSpeed) - maxSpeed/2);
+      pixels[numPoints -1].setColor(color);
+      
+      if (numPoints > numPointsMax) break;
+    }
+    if (numPoints > numPointsMax) break;
+  }
+}
+
+void LennardNet::initMarkerPixel()
+{
   markerPixel = Point2D(width()/2, height()/2);
   markerPixel.setSpeed(-50,50);
   markerPixel.setColor(Qt::green);
@@ -135,10 +153,10 @@ void LennardNet::paintPoints(Painter* painter)
 {
   for (auto p : pixels)
   {
-    painter->setPen(QPen(p.color(), 3, Qt::SolidLine, Qt::RoundCap));
+    painter->setPen(QPen(p.color(), 7, Qt::SolidLine, Qt::RoundCap));
     p.paint(painter);
   }
-  painter->setPen(QPen(markerPixel.color(), 6, Qt::SolidLine, Qt::RoundCap));
+  painter->setPen(QPen(markerPixel.color(), 7, Qt::SolidLine, Qt::RoundCap));
   markerPixel.paint(painter);
 }
 
@@ -159,11 +177,19 @@ void LennardNet::proceedInTime(double timeDiff)
 void LennardNet::checkInformMarkerPixelTime()
 {
   static bool elapsed = false;
-  if (markerPixel.pos().x() < 50 && false == elapsed)
+  static long unsigned timeElapsed = 0;
+  
+  if (false == elapsed) 
+  {
+    timeElapsed = nanoTimerTotal.nsecsElapsed()/1000000;
+  }
+  
+  if (markerPixel.pos().x() < 50)
   {
     elapsed = true;
-    label->setText("Time: " + QString::number(nanoTimerTotal.nsecsElapsed()/1000000));
   }
+  
+  label->setText("Time: " + QString::number(timeElapsed));
 }
 
 
@@ -175,8 +201,8 @@ Point2D LennardNet::calculateForceForPoint(Point2D pos)
   for (auto &p : pixels)
   {
     vector = p.pos() - pos;
-    //force += gravityForce(vector);
-    force += LJForce(vector);
+    force += gravityForce(vector);
+    //force += LJForce(vector);
   }
   return force;
 }

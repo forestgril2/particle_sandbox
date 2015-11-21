@@ -11,6 +11,7 @@ using namespace std;
 typedef QPointF Point2D;
 typedef QPainter Painter;
 typedef QColor Color;
+typedef QRectF Rectangle;
 
 class Pixel //TODO: move to separate header
 {
@@ -43,12 +44,13 @@ class LennardNet : public QMainWindow
   virtual void paintEvent(QPaintEvent* pE);
   void initAction();
   void paintPoints(Painter* painter);
-  void initPixels();
-  void proceedInTime(double arg1);
+  void addPixelsSquareNet(double squareSide, Rectangle R, Color color);
+  void proceedInTime(double timeDiff);
   void initUpdateInterval();
   void initLabel();
   Point2D calculateForceForPoint(Point2D pos);
   void checkInformMarkerPixelTime();
+    void initMarkerPixel();
 
   Pixel markerPixel;
   vector<Pixel> pixels;
