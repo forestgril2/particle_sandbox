@@ -22,6 +22,66 @@ double netWidth = 410;
 double netHeight = 300;
 Rectangle netShape((canvasWidth - netWidth)/2, (canvasHeight - netHeight)/2, netWidth, netHeight);
 
+
+LennardNet::LennardNet()
+{
+  setGeometry(200, 200, canvasWidth, canvasHeight);
+  
+  addPixelsSquareNet(20, Rectangle(300, 300, 201, 201), Qt::red);
+  addPixelsSquareNet(20, Rectangle(500, 500, 201, 201), Qt::green);
+  addPixelsSquareNet(20, Rectangle(500, 300, 201, 201), Qt::blue);
+  addPixelsSquareNet(20, Rectangle(300, 500, 201, 201), Qt::yellow);
+  
+  initMarkerPixel();
+  initAction();
+  initLabel();
+  initStartButton();
+  initTimers();
+}
+
+void LennardNet::initStartButton()
+{
+  QPushButton* startButton = new QPushButton("START", this);
+  startButton -> setGeometry(width() - 70, height() - 40, 50, 20);
+  connect(startButton, SIGNAL(pressed()), SLOT(startTimers()));
+  startButton -> show();
+}
+
+void LennardNet::initMarkerPixel()
+{
+  markerPixel = Point2D(width()/2, height()/2);
+  markerPixel.setSpeed(-50, 50);
+  markerPixel.setColor(Qt::green);
+}
+
+void LennardNet::initAction()
+{
+  QAction* action = new QAction(this);
+  action->setText( "Quit" );
+  connect(action, SIGNAL(triggered()), SLOT(close()) );
+  menuBar()->addMenu( "File" )->addAction( action );
+}
+
+void LennardNet::initLabel()
+{
+  label = new QLabel( this );
+  label->setStyleSheet("QLabel { background-color : black; color : white; }");
+  label->setText( "Time: " );
+  label->move(20, 20);
+}
+
+void LennardNet::initTimers()
+{
+  canvasUpdateTimer = new QTimer(this);
+  connect(canvasUpdateTimer, SIGNAL(timeout()), this, SLOT(update()));
+  nanoTimer.start();
+  nanoTimerTotal.start();
+}
+
+void LennardNet::startTimers()
+{
+  canvasUpdateTimer->start(TIME_INTERVAL * MSEC_PER_SEC);
+}
 // Maths and physics
 double randd(double max)
 {
@@ -51,7 +111,7 @@ Point2D LJForce(Point2D vector)
 
 Point2D gravityForce(Point2D vector)
 {
-  static const double gravityConstant = 0.1;
+  static const double gravityConstant = 0.3;
   static const double lowerGravityCutoff = 2;
   static const double upperGravityCutoff = 5000;
   
@@ -60,38 +120,6 @@ Point2D gravityForce(Point2D vector)
   if (dist < lowerGravityCutoff || dist > upperGravityCutoff) return Point2D(0, 0);
   return gravityConstant * vector / sqrDist;
 }
-
-LennardNet::LennardNet()
-{
-  setGeometry(200, 200, canvasWidth, canvasHeight);
-  
-  addPixelsSquareNet(10, Rectangle(200, 200, 150, 150), Qt::red);
-  addPixelsSquareNet(15, Rectangle(400, 300, 150, 150), Qt::green);
-  addPixelsSquareNet(20, Rectangle(300, 400, 150, 150), Qt::blue);
-  
-  initMarkerPixel();
-  initAction();
-  initLabel();
-  initUpdateInterval();
-}
-
-void LennardNet::initLabel()
-{
-  label = new QLabel( this );
-  label->setStyleSheet("QLabel { background-color : black; color : white; }");
-  label->setText( "Time: " );
-  label->move(20, 20);
-}
-
-void LennardNet::initUpdateInterval()
-{
-  QTimer *timer = new QTimer(this);
-  connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-  timer->start(TIME_INTERVAL * MSEC_PER_SEC);
-  nanoTimer.start();
-  nanoTimerTotal.start();
-}
-
 
 void LennardNet::addPixelsSquareNet(double squareSide, Rectangle R, Color color)
 {
@@ -112,21 +140,6 @@ void LennardNet::addPixelsSquareNet(double squareSide, Rectangle R, Color color)
     }
     if (numPoints > numPointsMax) break;
   }
-}
-
-void LennardNet::initMarkerPixel()
-{
-  markerPixel = Point2D(width()/2, height()/2);
-  markerPixel.setSpeed(-50,50);
-  markerPixel.setColor(Qt::green);
-}
-
-void LennardNet::initAction()
-{
-  QAction* action = new QAction(this);
-  action->setText( "Quit" );
-  connect(action, SIGNAL(triggered()), SLOT(close()) );
-  menuBar()->addMenu( "File" )->addAction( action );
 }
 
 LennardNet::~LennardNet()

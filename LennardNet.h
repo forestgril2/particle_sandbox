@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QElapsedTimer>
 #include <QLabel>
+#include <QPushButton>
 
 using namespace std;
 
@@ -46,17 +47,22 @@ class LennardNet : public QMainWindow
   void paintPoints(Painter* painter);
   void addPixelsSquareNet(double squareSide, Rectangle R, Color color);
   void proceedInTime(double timeDiff);
-  void initUpdateInterval();
+  void initTimers();
   void initLabel();
   Point2D calculateForceForPoint(Point2D pos);
   void checkInformMarkerPixelTime();
     void initMarkerPixel();
+  void initStartButton();
 
   Pixel markerPixel;
   vector<Pixel> pixels;
   QElapsedTimer nanoTimerTotal;
   QElapsedTimer nanoTimer;
   QLabel* label;
+  QTimer *canvasUpdateTimer;
+  
+private slots:
+  void startTimers();
 
 public:
   LennardNet();
