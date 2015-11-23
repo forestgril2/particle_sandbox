@@ -23,7 +23,7 @@ double netHeight = 300;
 Rectangle netShape((canvasWidth - netWidth)/2, (canvasHeight - netHeight)/2, netWidth, netHeight);
 
 
-LennardNet::LennardNet()
+LennardNet::LennardNet() : startedUpdates(false)
 {
   setGeometry(200, 200, canvasWidth, canvasHeight);
   
@@ -41,7 +41,7 @@ LennardNet::LennardNet()
 
 void LennardNet::initStartButton()
 {
-  QPushButton* startButton = new QPushButton("START", this);
+  startButton = new QPushButton("START", this);
   startButton -> setGeometry(width() - 70, height() - 40, 50, 20);
   connect(startButton, SIGNAL(pressed()), SLOT(startTimers()));
   startButton -> show();
@@ -74,13 +74,16 @@ void LennardNet::initTimers()
 {
   canvasUpdateTimer = new QTimer(this);
   connect(canvasUpdateTimer, SIGNAL(timeout()), this, SLOT(update()));
-  nanoTimer.start();
-  nanoTimerTotal.start();
 }
 
 void LennardNet::startTimers()
 {
   canvasUpdateTimer->start(TIME_INTERVAL * MSEC_PER_SEC);
+  nanoTimer.start();
+  nanoTimerTotal.start();
+  startedUpdates = true;
+  
+  startButton -> setText("STOP");
 }
 // Maths and physics
 double randd(double max)
@@ -157,9 +160,12 @@ void LennardNet::paintEvent(QPaintEvent* pE)
   painter.fillRect(0, 0, width(), height(), Qt::black);
   paintPoints(&painter);
   
-  qint64 nanoSec = nanoTimer.nsecsElapsed();
-  nanoTimer.restart();
-  proceedInTime(static_cast<double>(nanoSec)/1000000000.);
+  if (true == startedUpdates)
+  {
+    qint64 nanoSec = nanoTimer.nsecsElapsed();
+    nanoTimer.restart();
+    proceedInTime(static_cast<double>(nanoSec)/1000000000.);
+  }
 }
 
 void LennardNet::paintPoints(Painter* painter)
@@ -204,7 +210,6 @@ void LennardNet::checkInformMarkerPixelTime()
   
   label->setText("Time: " + QString::number(timeElapsed));
 }
-
 
 Point2D LennardNet::calculateForceForPoint(Point2D pos)
 {

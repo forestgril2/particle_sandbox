@@ -51,7 +51,7 @@ class LennardNet : public QMainWindow
   void initLabel();
   Point2D calculateForceForPoint(Point2D pos);
   void checkInformMarkerPixelTime();
-    void initMarkerPixel();
+  void initMarkerPixel();
   void initStartButton();
 
   Pixel markerPixel;
@@ -60,9 +60,11 @@ class LennardNet : public QMainWindow
   QElapsedTimer nanoTimer;
   QLabel* label;
   QTimer *canvasUpdateTimer;
+  bool startedUpdates;
   
 private slots:
   void startTimers();
+  void startButton(const char* arg1);
 
 public:
   LennardNet();
