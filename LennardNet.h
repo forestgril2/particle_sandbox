@@ -59,12 +59,12 @@ class LennardNet : public QMainWindow
   QElapsedTimer nanoTimerTotal;
   QElapsedTimer nanoTimer;
   QLabel* label;
-  QTimer *canvasUpdateTimer;
+  QTimer* canvasUpdateTimer;
+  QPushButton* startButton;
   bool startedUpdates;
   
 private slots:
   void startTimers();
-  void startButton(const char* arg1);
 
 public:
   LennardNet();
