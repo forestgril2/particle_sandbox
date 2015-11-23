@@ -16,7 +16,7 @@ const unsigned pixelMass = 1;
 const unsigned int MSEC_PER_SEC = 1000;
 const double TIME_INTERVAL = 0.05;
 const unsigned numPointsMax = 1000;
-const double maxSpeed = 0;
+const double maxSpeed = 0.3;
 
 double netWidth = 410; 
 double netHeight = 300;
@@ -30,7 +30,7 @@ double randd(double max)
 
 Point2D LJForce(Point2D vector)
 {
-  static const double LJConstant = 10;
+  static const double LJConstant = 1;
   static const double LJDistance = 10;
   static const double squareLJDist = LJDistance*LJDistance;
   static const double lowerLJCutoff = 0.75*LJDistance;
@@ -51,23 +51,36 @@ Point2D LJForce(Point2D vector)
 
 Point2D gravityForce(Point2D vector)
 {
-  static const double gravityConstant = 0.1;
+  static const double gravityConstant = 0.5;
   static const double lowerGravityCutoff = 2;
   static const double upperGravityCutoff = 5000;
   
   double sqrDist = sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
-  double dist = sqrt(sqrDist); 
+  double dist = sqrt(sqrDist);
   if (dist < lowerGravityCutoff || dist > upperGravityCutoff) return Point2D(0, 0);
   return gravityConstant * vector / sqrDist;
+}
+
+Point2D springForce(Point2D vector)
+{
+  static const double minDist = 8;
+  static const double maxDist = 12;
+  static const double neutralDist = 10;
+  static const double k = 100;
+  double dist = sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
+  
+  if (dist > maxDist || dist < minDist) return Point2D(0, 0);
+  
+  return k * vector * pow(dist,-1) * (dist - neutralDist);
 }
 
 LennardNet::LennardNet()
 {
   setGeometry(200, 200, canvasWidth, canvasHeight);
   
-  addPixelsSquareNet(10, Rectangle(200, 200, 150, 150), Qt::red);
-  addPixelsSquareNet(15, Rectangle(400, 300, 150, 150), Qt::green);
-  addPixelsSquareNet(20, Rectangle(300, 400, 150, 150), Qt::blue);
+  addPixelsSquareNet(20, Rectangle(400, 400, 200, 200), Qt::cyan);
+  //addPixelsSquareNet(15, Rectangle(400, 300, 100, 200), Qt::magenta);
+  //addPixelsSquareNet(20, Rectangle(300, 400, 150, 150), Qt::cyan);
   
   initMarkerPixel();
   initAction();
@@ -118,7 +131,7 @@ void LennardNet::initMarkerPixel()
 {
   markerPixel = Point2D(width()/2, height()/2);
   markerPixel.setSpeed(-50,50);
-  markerPixel.setColor(Qt::green);
+  markerPixel.setColor(Qt::darkMagenta);
 }
 
 void LennardNet::initAction()
@@ -201,8 +214,9 @@ Point2D LennardNet::calculateForceForPoint(Point2D pos)
   for (auto &p : pixels)
   {
     vector = p.pos() - pos;
-    force += gravityForce(vector);
+    //force += gravityForce(vector);
     //force += LJForce(vector);
+    force += springForce(vector);
   }
   return force;
 }
