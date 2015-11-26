@@ -24,10 +24,10 @@ LennardNet::LennardNet() : startedUpdates(false)
 {
   setGeometry(200, 200, 100, 40);
   
-  addPixelsSquareNet(10, Rectangle(300, 300, 201, 201), Qt::red);
-  addPixelsSquareNet(10, Rectangle(500, 500, 201, 201), Qt::green);
-  addPixelsSquareNet(10, Rectangle(500, 300, 201, 201), Qt::blue);
-  addPixelsSquareNet(10, Rectangle(300, 500, 201, 201), Qt::yellow);
+  addPixelsSquareNet(20, Rectangle(300, 300, 201, 201), Qt::red);
+  addPixelsSquareNet(20, Rectangle(500, 500, 201, 201), Qt::green);
+  addPixelsSquareNet(20, Rectangle(500, 300, 201, 201), Qt::blue);
+  addPixelsSquareNet(20, Rectangle(300, 500, 201, 201), Qt::yellow);
   //addPixel(widht()/2 -100, Qt::yellow);
   
   initAction();
@@ -134,13 +134,16 @@ void LennardNet::paintPoints(Painter* painter)
 
 void LennardNet::proceedInTime(double timeDiff)
 {
-  Point2D acceleration;
+  Point2D* accelerations = new Point2D[pixels.size()];
 
   calculationNanoTimer.start();
-  for (auto &p : pixels)
+  for (auto p = 0; p < pixels.size(); p++)
   {
-    acceleration = calculateForceForPoint(p.pos())/pixelMass;
-    p.proceedInTime(timeDiff, acceleration);
+    accelerations[p] = calculateForceForPoint(pixels[p].pos())/pixelMass;
+  }
+  for (auto p = 0; p < pixels.size(); p++)
+  {
+    pixels[p].proceedInTime(timeDiff, accelerations[p]);
   }
   printCalculationTime();
 }
