@@ -28,19 +28,20 @@ LennardNet::LennardNet() : startedUpdates(false)
   addPixelsSquareNet(20, Rectangle(500, 500, 201, 201), Qt::green);
   addPixelsSquareNet(20, Rectangle(500, 300, 201, 201), Qt::blue);
   addPixelsSquareNet(20, Rectangle(300, 500, 201, 201), Qt::yellow);
+  //addPixel(widht()/2 -100, Qt::yellow);
   
   initAction();
   initLabel();
-  initStartButton();
-  initTimers();
+  initStartStopButton();
+  initCanvasUpdateTimer();
 }
 
-void LennardNet::initStartButton()
+void LennardNet::initStartStopButton()
 {
-  startButton = new QPushButton("START", this);
-  startButton -> setGeometry(0, 20, 50, 20);
-  connect(startButton, SIGNAL(pressed()), SLOT(startTimers()));
-  startButton -> show();
+  startStopButton = new QPushButton("START", this);
+  startStopButton -> setGeometry(0, 20, 50, 20);
+  connect(startStopButton, SIGNAL(pressed()), SLOT(startStop()));
+  startStopButton -> show();
 }
 
 void LennardNet::initAction()
@@ -59,20 +60,30 @@ void LennardNet::initLabel()
   label->move(0, 0);
 }
 
-void LennardNet::initTimers()
+void LennardNet::initCanvasUpdateTimer()
 {
   canvasUpdateTimer = new QTimer(this);
   connect(canvasUpdateTimer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
-void LennardNet::startTimers()
+void LennardNet::startStop()
 {
-  canvasUpdateTimer->start(TIME_INTERVAL * MSEC_PER_SEC);
-  nanoTimer.start();
-  nanoTimerTotal.start();
-  startedUpdates = true;
-  
-  startButton -> setText("STOP");
+  if (true == startedUpdates)
+  {
+    startStopButton -> setText("START");
+    canvasUpdateTimer-> stop();
+    nanoTimer.invalidate();
+    nanoTimerTotal.invalidate();
+    startedUpdates = false;
+  }
+  else
+  {
+    startStopButton -> setText("STOP");
+    canvasUpdateTimer->start(TIME_INTERVAL * MSEC_PER_SEC);
+    nanoTimer.start();
+    nanoTimerTotal.start();
+    startedUpdates = true;
+  }
 }
 
 void LennardNet::addPixelsSquareNet(double squareSide, Rectangle R, Color color)

@@ -20,23 +20,23 @@ class LennardNet : public QMainWindow
   void paintPoints(Painter* painter);
   void addPixelsSquareNet(double squareSide, Rectangle R, Color color);
   void proceedInTime(double timeDiff);
-  void initTimers();
+  void initCanvasUpdateTimer();
   void initLabel();
   Point2D calculateForceForPoint(Point2D pos);
   void printTimes();
   void initMarkerPixel();
-  void initStartButton();
+  void initStartStopButton();
 
   vector<Pixel> pixels;
   QElapsedTimer nanoTimerTotal;
   QElapsedTimer nanoTimer;
   QLabel* label;
   QTimer* canvasUpdateTimer;
-  QPushButton* startButton;
+  QPushButton* startStopButton;
   bool startedUpdates;
   
 private slots:
-  void startTimers();
+  void startStop();
   void startTimeMeasurement(string name);
   //void addTimer(string name);
 
