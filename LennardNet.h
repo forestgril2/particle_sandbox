@@ -23,13 +23,13 @@ class LennardNet : public QMainWindow
   void initCanvasUpdateTimer();
   void initLabel();
   Point2D calculateForceForPoint(Point2D pos);
-  void printTimes();
+  void printCalculationTime();
   void initMarkerPixel();
   void initStartStopButton();
 
   vector<Pixel> pixels;
-  QElapsedTimer nanoTimerTotal;
-  QElapsedTimer nanoTimer;
+  QElapsedTimer calculationNanoTimer;
+  QElapsedTimer paintEventNanoTimer;
   QLabel* label;
   QTimer* canvasUpdateTimer;
   QPushButton* startStopButton;

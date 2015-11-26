@@ -12,7 +12,7 @@ const unsigned canvasHeight = 1000;
 const unsigned pixelMass = 1;
 const unsigned int MSEC_PER_SEC = 1000;
 const double TIME_INTERVAL = 0.05;
-const unsigned numPointsMax = 1000;
+const unsigned numPointsMax = 5000;
 const double maxSpeed = 0;
 
 double netWidth = 410; 
@@ -72,16 +72,14 @@ void LennardNet::startStop()
   {
     startStopButton -> setText("START");
     canvasUpdateTimer-> stop();
-    nanoTimer.invalidate();
-    nanoTimerTotal.invalidate();
+    paintEventNanoTimer.invalidate();
     startedUpdates = false;
   }
   else
   {
     startStopButton -> setText("STOP");
     canvasUpdateTimer->start(TIME_INTERVAL * MSEC_PER_SEC);
-    nanoTimer.start();
-    nanoTimerTotal.start();
+    paintEventNanoTimer.start();
     startedUpdates = true;
   }
 }
@@ -119,8 +117,8 @@ void LennardNet::paintEvent(QPaintEvent* pE)
   
   if (true == startedUpdates)
   {
-    qint64 nanoSec = nanoTimer.nsecsElapsed();
-    nanoTimer.restart();
+    qint64 nanoSec = paintEventNanoTimer.nsecsElapsed();
+    paintEventNanoTimer.restart();
     proceedInTime(static_cast<double>(nanoSec)/1000000000.);
   }
 }
@@ -137,32 +135,24 @@ void LennardNet::paintPoints(Painter* painter)
 void LennardNet::proceedInTime(double timeDiff)
 {
   Point2D acceleration;
-  
-  startTimeMeasurement("All pixel calculations.");
+
+  calculationNanoTimer.start();
   for (auto &p : pixels)
   {
     acceleration = calculateForceForPoint(p.pos())/pixelMass;
     p.proceedInTime(timeDiff, acceleration);
   }
-  printTimes();
+  printCalculationTime();
 }
 
 void LennardNet::startTimeMeasurement(string name)
 {
-  //addTimer(name);
-  //startTimer(name);
+  paintEventNanoTimer.start();
 }
 
-void LennardNet::printTimes()
+void LennardNet::printCalculationTime()
 {
-  static bool elapsed = false;
-  static long unsigned timeElapsed = 0;
-  
-  if (false == elapsed) 
-  {
-    timeElapsed = nanoTimer.nsecsElapsed()/1000000;
-  }
-  
+  long unsigned timeElapsed= calculationNanoTimer.nsecsElapsed()/1000000;
   label->setText("Time: " + QString::number(timeElapsed));
 }
 
