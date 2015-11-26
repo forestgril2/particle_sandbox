@@ -24,10 +24,10 @@ LennardNet::LennardNet() : startedUpdates(false)
 {
   setGeometry(200, 200, 100, 40);
   
-  addPixelsSquareNet(20, Rectangle(300, 300, 201, 201), Qt::red);
-  addPixelsSquareNet(20, Rectangle(500, 500, 201, 201), Qt::green);
-  addPixelsSquareNet(20, Rectangle(500, 300, 201, 201), Qt::blue);
-  addPixelsSquareNet(20, Rectangle(300, 500, 201, 201), Qt::yellow);
+  addPixelsSquareNet(10, Rectangle(300, 300, 201, 201), Qt::red);
+  addPixelsSquareNet(10, Rectangle(500, 500, 201, 201), Qt::green);
+  addPixelsSquareNet(10, Rectangle(500, 300, 201, 201), Qt::blue);
+  addPixelsSquareNet(10, Rectangle(300, 500, 201, 201), Qt::yellow);
   //addPixel(widht()/2 -100, Qt::yellow);
   
   initAction();
@@ -160,7 +160,7 @@ void LennardNet::printTimes()
   
   if (false == elapsed) 
   {
-    timeElapsed = nanoTimerTotal.nsecsElapsed()/1000000;
+    timeElapsed = nanoTimer.nsecsElapsed()/1000000;
   }
   
   label->setText("Time: " + QString::number(timeElapsed));
