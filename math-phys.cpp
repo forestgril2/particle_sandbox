@@ -38,3 +38,16 @@ Point2D gravityForce(Point2D vector)
   if (dist < lowerGravityCutoff || dist > upperGravityCutoff) return Point2D(0, 0);
   return gravityConstant * vector / sqrDist;
 }
+
+Point2D springForce(Point2D vector)
+{
+  static const double minDist = 7;
+  static const double maxDist = 13;
+  static const double neutralDist = 10;
+  static const double k = 1;
+  double dist = sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
+  
+  if (dist > maxDist || dist < minDist) return Point2D(0, 0);
+  
+  return k * vector * pow(dist,-1) * (dist - neutralDist);
+}

@@ -13,7 +13,7 @@ const unsigned pixelMass = 1;
 const unsigned int MSEC_PER_SEC = 1000;
 const double TIME_INTERVAL = 0.05;
 const unsigned numPointsMax = 5000;
-const double maxSpeed = 0.3;
+const double maxSpeed = 0.0;
 
 double netWidth = 410; 
 double netHeight = 300;
@@ -24,10 +24,10 @@ LennardNet::LennardNet() : startedUpdates(false)
 {
   setGeometry(200, 200, 100, 40);
   
-  addPixelsSquareNet(20, Rectangle(300, 300, 201, 201), Qt::red);
-  addPixelsSquareNet(20, Rectangle(500, 500, 201, 201), Qt::green);
-  addPixelsSquareNet(20, Rectangle(500, 300, 201, 201), Qt::blue);
-  addPixelsSquareNet(20, Rectangle(300, 500, 201, 201), Qt::yellow);
+  addPixelsSquareNet(10, Rectangle(100, 100, 301, 301), Qt::red);
+  //addPixelsSquareNet(20, Rectangle(500, 500, 201, 201), Qt::green);
+  //addPixelsSquareNet(20, Rectangle(500, 300, 201, 201), Qt::blue);
+  //addPixelsSquareNet(20, Rectangle(300, 500, 201, 201), Qt::yellow);
   //addPixel(widht()/2 -100, Qt::yellow);
   
   initAction();
@@ -84,19 +84,6 @@ void LennardNet::startStop()
   }
 }
 
-Point2D springForce(Point2D vector)
-{
-  static const double minDist = 8;
-  static const double maxDist = 12;
-  static const double neutralDist = 10;
-  static const double k = 100;
-  double dist = sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
-  
-  if (dist > maxDist || dist < minDist) return Point2D(0, 0);
-  
-  return k * vector * pow(dist,-1) * (dist - neutralDist);
-}
-
 void LennardNet::addPixelsSquareNet(double squareSide, Rectangle R, Color color)
 {
   auto numPoints = pixels.size();
@@ -148,13 +135,15 @@ void LennardNet::paintPoints(Painter* painter)
 void LennardNet::proceedInTime(double timeDiff)
 {
   Point2D* accelerations = new Point2D[pixels.size()];
+  unsigned size = pixels.size();
 
   calculationNanoTimer.start();
-  for (auto p = 0; p < pixels.size(); p++)
+  for (auto p = 0; p < size; p++)
   {
     accelerations[p] = calculateForceForPoint(pixels[p].pos())/pixelMass;
   }
-  for (auto p = 0; p < pixels.size(); p++)
+  
+  for (auto p = 0; p < size; p++)
   {
     pixels[p].proceedInTime(timeDiff, accelerations[p]);
   }
@@ -176,13 +165,15 @@ Point2D LennardNet::calculateForceForPoint(Point2D pos)
 {
   Point2D force(0,0);
   Point2D vector;
+  
+  unsigned size = pixels.size();
 
-  for (auto &p : pixels)
+  for (auto p = 0; p < size; p++)
   {
-    vector = p.pos() - pos;
+    vector = pixels[p].pos() - pos;
     //force += gravityForce(vector);
-    force += LJForce(vector);
-    //force += springForce(vector);
+    //force += LJForce(vector);
+    force += springForce(vector);
   }
   return force;
 }
