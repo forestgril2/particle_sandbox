@@ -114,7 +114,7 @@ Point2D LJForce(Point2D vector)
 
 Point2D gravityForce(Point2D vector)
 {
-  static const double gravityConstant = 0.3;
+  static const double gravityConstant = 0.7;
   static const double lowerGravityCutoff = 2;
   static const double upperGravityCutoff = 5000;
   
@@ -233,8 +233,8 @@ Point2D LennardNet::calculateForceForPoint(Point2D pos)
   {
     vector = p.pos() - pos;
     //force += gravityForce(vector);
-    //force += LJForce(vector);
-    force += springForce(vector);
+    force += LJForce(vector);
+    //force += springForce(vector);
   }
   return force;
 }
