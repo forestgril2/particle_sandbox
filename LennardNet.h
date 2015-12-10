@@ -18,6 +18,8 @@ class LennardNet : public QMainWindow
   virtual void paintEvent(QPaintEvent* pE);
   void initAction();
   void paintPoints(Painter* painter);
+  void addPixel(double x, double y, Color color);
+  void addPixel(double x, double y, Color color, double mass);
   void addPixelsSquareNet(double squareSide, Rectangle R, Color color);
   void proceedInTime(double timeDiff);
   void initCanvasUpdateTimer();

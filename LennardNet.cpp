@@ -13,7 +13,7 @@ const unsigned pixelMass = 1;
 const unsigned int MSEC_PER_SEC = 1000;
 const double TIME_INTERVAL = 0.05;
 const unsigned numPointsMax = 5000;
-const double maxSpeed = 0.0;
+const double maxSpeed = 0.1;
 
 double netWidth = 410; 
 double netHeight = 300;
@@ -22,13 +22,15 @@ Rectangle netShape((canvasWidth - netWidth)/2, (canvasHeight - netHeight)/2, net
 
 LennardNet::LennardNet() : startedUpdates(false)
 {
-  setGeometry(200, 200, 100, 40);
+  setGeometry(200, 200, 1000, 1000);
   
-  addPixelsSquareNet(10, Rectangle(100, 100, 301, 301), Qt::red);
+  addPixelsSquareNet(10, Rectangle(250, 250, 100, 100), Qt::red);
   //addPixelsSquareNet(20, Rectangle(500, 500, 201, 201), Qt::green);
   //addPixelsSquareNet(20, Rectangle(500, 300, 201, 201), Qt::blue);
   //addPixelsSquareNet(20, Rectangle(300, 500, 201, 201), Qt::yellow);
-  //addPixel(widht()/2 -100, Qt::yellow);
+  addPixel(width()/2 -100, height()/2, Qt::yellow, 100);
+  //pixels[pixels.size() -1].setSpeed(10,-10);
+  //addPixel(width()/2 +100, height()/2, Qt::green);
   
   initAction();
   initLabel();
@@ -84,21 +86,34 @@ void LennardNet::startStop()
   }
 }
 
-void LennardNet::addPixelsSquareNet(double squareSide, Rectangle R, Color color)
+void LennardNet::addPixel(double x, double y, Color color)
 {
   auto numPoints = pixels.size();
-  
-  for (auto x = R.left(); x <= R.left() + R.width(); x += squareSide)
-  {
-    for (auto y = R.top(); y <= R.top() + R.height(); y += squareSide)
-    {
-      pixels.resize(++numPoints);
-    
-      pixels[numPoints -1] = Point2D(x, y);
+  pixels.resize(++numPoints);
+  pixels[numPoints -1] = Point2D(x, y);
+  pixels[numPoints -1].setColor(color);
+  pixels[numPoints -1].setMass(1);
+}
 
-      pixels[numPoints -1].setSpeed(randd(maxSpeed) - maxSpeed/2, randd(maxSpeed) - maxSpeed/2);
-      pixels[numPoints -1].setColor(color);
-      
+void LennardNet::addPixel(double x, double y, Color color, double mass)
+{
+  addPixel(x, y, color);
+  auto numPoints = pixels.size();
+  pixels[numPoints -1].setMass(mass);
+}
+
+void LennardNet::addPixelsSquareNet(double squareSide, Rectangle R, Color color)
+{
+  unsigned numPoints;
+  
+  for (double x = R.left(); x <= R.left() + R.width(); x += squareSide)
+  {
+    for (double y = R.top(); y <= R.top() + R.height(); y += squareSide)
+    {
+      addPixel(x, y, color);
+
+      numPoints = pixels.size();
+      pixels[numPoints -1].setSpeed(1000, -1000);
       if (numPoints > numPointsMax) break;
     }
     if (numPoints > numPointsMax) break;
@@ -127,7 +142,7 @@ void LennardNet::paintPoints(Painter* painter)
 {
   for (auto p : pixels)
   {
-    painter->setPen(QPen(p.color(), 7, Qt::SolidLine, Qt::RoundCap));
+    painter->setPen(QPen(p.color(), 7*pow(p.mass(),0.333), Qt::SolidLine, Qt::RoundCap));
     p.paint(painter);
   }
 }
@@ -140,7 +155,7 @@ void LennardNet::proceedInTime(double timeDiff)
   calculationNanoTimer.start();
   for (auto p = 0; p < size; p++)
   {
-    accelerations[p] = calculateForceForPoint(pixels[p].pos())/pixelMass;
+    accelerations[p] = calculateForceForPoint(pixels[p].pos())/pixels[p].mass();
   }
   
   for (auto p = 0; p < size; p++)
@@ -171,9 +186,9 @@ Point2D LennardNet::calculateForceForPoint(Point2D pos)
   for (auto p = 0; p < size; p++)
   {
     vector = pixels[p].pos() - pos;
-    //force += gravityForce(vector);
+    force += pixels[p].mass()*gravityForce(vector);
     //force += LJForce(vector);
-    force += springForce(vector);
+    //force += springForce(vector);
   }
   return force;
 }
