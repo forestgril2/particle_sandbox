@@ -20,11 +20,12 @@ class LennardNet : public QMainWindow
   void paintPoints(Painter* painter);
   void addPixel(double x, double y, Color color);
   void addPixel(double x, double y, Color color, double mass);
-  void addPixelsSquareNet(double squareSide, Rectangle R, Color color);
+  void addPixelsSquareNet(double squareSide, Rectangle R,  Point2D speed, Color color);
   void proceedInTime(double timeDiff);
   void initCanvasUpdateTimer();
   void initLabel();
   Point2D calculateForceForPoint(Point2D pos);
+  double totalEnergy();
   void printCalculationTime();
   void initMarkerPixel();
   void initStartStopButton();
@@ -36,6 +37,7 @@ class LennardNet : public QMainWindow
   QTimer* canvasUpdateTimer;
   QPushButton* startStopButton;
   bool startedUpdates;
+  const double pixelSizeForUnitMass = 7;
   
 private slots:
   void startStop();
@@ -46,5 +48,7 @@ public:
   LennardNet();
   virtual ~LennardNet();
 };
+
+//const double LennardNet::pixelSizeForUnitMass = 7;
 
 #endif // LennardNet_H

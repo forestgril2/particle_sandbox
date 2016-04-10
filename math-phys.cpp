@@ -30,7 +30,7 @@ Point2D LJForce(Point2D vector)
 Point2D gravityForce(Point2D vector)
 {
   static const double gravityConstant = 0.03;
-  static const double lowerGravityCutoff = 2;
+  static const double lowerGravityCutoff = 0.1;
   static const double upperGravityCutoff = 5000;
   
   double sqrDist = sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
